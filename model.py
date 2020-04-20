@@ -111,7 +111,7 @@ class ResNestBlock(tf.keras.Model):
 
     def call(self, x, training=None, **kwargs):
         for layer in self.listLayers.layers:
-            output = layer(x)
+            x = layer(x)
         return x
 
 

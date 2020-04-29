@@ -67,8 +67,12 @@ class BottleNeck(tf.keras.Model):
         z = self.bn3(z, training=training)
         z = tf.nn.relu(z)
         z = self.fc2(z)
+        #实现r-softmax
+        z = tf.reshape(z,[-1,self.groups,self.radix,self.mid_channel//self.groups])
+        z = tf.transpose(z,[0,2,1,3])
         z = tf.reshape(z,[-1,self.radix,self.mid_channel])
         z = tf.keras.activations.softmax(z,axis=1)
+        
         logits = [tf.expand_dims(m,axis=1) for m in tf.split(z,num_or_size_splits=self.radix,axis=1)]
         out = sum([a*b for a,b in zip(splited,logits)])
         out = tf.nn.relu(self.bn4(out))
